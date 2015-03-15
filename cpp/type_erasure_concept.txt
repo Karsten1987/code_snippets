@@ -1,0 +1,63 @@
+class Bridge
+{
+public:
+
+	// this will be changed when team platform decides to allow c++11
+  void add( const Publisher& pub )
+	{
+	all_pubs.push_back( pub );
+
+
+private:
+	std::vector< Publisher > all_pubs;
+};
+
+
+class Publisher
+{
+public:
+  template< T >
+  Publisher( T o )
+  : _object(
+{  = make_shared<Model<T>>(o); }
+
+
+  void publish() { _object->publish(); }
+
+private:
+  struct Concept
+  {
+      virtual ~Concept(){}
+      virtual std::string name() = 0;
+      virtual void publish() = 0;
+      virtual void update() = 0;
+  };
+  template<T> struct Model : public Concept
+  {
+      Model( const T& other ) _actualObject(other){}
+      T _actualObject;
+      void publish() { _actualObject.publish() }
+      void update() { ... }
+  };
+
+
+  shared_ptr<Concept> _object; 
+
+};
+
+
+void main()
+{
+	Bridge my_bridge;
+
+   	StringPublisher myp;
+	FloatPublisher 
+	my_bridge.add ( myp );
+
+}
+
+
+
+
+
+

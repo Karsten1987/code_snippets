@@ -1,0 +1,8 @@
+#!/bin/bash
+
+_foo()
+{
+  local cur=${COMP_WORDS[COMPC_WORDS]}
+  COMPREPLY=( $(compgen -W "word1 word2 word3" -- $cur) )
+}
+complete -F _foo foo
