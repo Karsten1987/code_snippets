@@ -1,38 +1,52 @@
 #include <boost/thread.hpp>
+#include <queue>
 
 boost::mutex	m_write;
 boost::mutex 	m_read;
 int 		state;
 
-void readerApi(std::string name)
+namespace data
 {
-	while(true)
-	{
-	m_read.lock();
-	if (state % 2 ==0)
-	{
-		std::cout << name <<" cool:" << state << std::endl;
-	}
-	else
-	{
-		std::cout <<name << " wrong:" << std::endl;
-	}
-	m_read.unlock();
-	usleep(100000);
-	}
+  struct Item
+  {
+    Item( std::string name )
+      : name_(name)
+    {}
+    std::string name_;
+  };
+
+  static std::queue<Item> global_queue;
+}
+
+void reader(std::string name)
+{
+  while(true)
+  {
+    m_read.lock();
+    if (state % 2 ==0)
+    {
+      std::cout << name <<" cool:" << state << std::endl;
+    }
+    else
+    {
+      std::cout <<name << " wrong:" << std::endl;
+    }
+    m_read.unlock();
+    usleep(100000);
+  }
 
 }
-void writerApi(std::string name)
+void writer(std::string name)
 {
-	while(true)
-	{
-		m_write.lock();
-		state++;
-		usleep(10000);
-		state++;	
-		usleep(100000);
-		m_write.unlock();
-	}
+  while(true)
+  {
+    m_write.lock();
+    state++;
+    usleep(10000);
+    state++;
+    usleep(100000);
+    m_write.unlock();
+  }
 }
 
 int main()

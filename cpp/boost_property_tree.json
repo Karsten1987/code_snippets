@@ -1,0 +1,15 @@
+{
+  "converters":
+  {
+    "depth_camera":
+    {
+      "resolution": "QVGA",
+      "fps": 15
+    },
+    "ir_camera":
+    {
+      "resolution": "QQVGA",
+      "fps": 5
+    }
+  }
+}

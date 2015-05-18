@@ -1,0 +1,10 @@
+<converters>
+  <depth_camera>
+    <resolution>QVGA</resolution>
+    <fps>15</fps>
+  </camera>
+  <ir_camera>
+    <resolution>QQGVA</resolution>
+    <fps>5</fps>
+  </camera>
+</converters>
