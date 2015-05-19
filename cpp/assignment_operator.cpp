@@ -19,7 +19,7 @@ struct B
   {}
 
 private:
-  const A* const a_;
+  const A* a_;
   float f_;
 };
 
