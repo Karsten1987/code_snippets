@@ -80,10 +80,6 @@ void storeStruct( MyStruct&& s )
   global::all_structs.push_back( std::forward<MyStruct>(s));
 }
 
-void storeStructRef( const MyStruct& s )
-{
-}
-
 int main()
 {
   MyStruct a(10, 2);
@@ -102,7 +98,6 @@ int main()
   printStruct( std::move(b) );
 
   cout << "****************************" << endl;
-  storeStructRef( a );
   //MyStruct&& s = MyStruct(4,1);
   //storeStruct( std::forward<MyStruct>(s) );
   storeStruct( std::move(a) );
