@@ -33,6 +33,21 @@ void insertNode(Node* root, int value, Node* next = NULL)
   root->p_next = n;
 }
 
+void deleteFirst(Node* root, int value)
+{
+  while( root->p_next != NULL )
+  {
+    if( root->value == value )
+    {
+      root->value = root->p_next->value;
+      root->p_next = root->p_next->p_next;
+      return;
+    }
+    root = root->p_next;
+  }
+}
+
+
 Node* reverseList(Node* current)
 {
   Node* parent = NULL; // first element has to be the last one
@@ -113,6 +128,9 @@ int main()
   insertNode(init, 4);
   insertNode(init, 5);
   insertNode(init, 6);
+
+  deleteFirst(init, 3);
+  printList(init);
 
   printList( reverseList(init) );
 
