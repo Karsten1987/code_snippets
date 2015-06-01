@@ -33,19 +33,20 @@ void insertNode(Node* root, int value, Node* next = NULL)
   root->p_next = n;
 }
 
-Node* reverseList(Node* root)
+Node* reverseList(Node* current)
 {
-  Node* p_x = root;
-  Node* p_l = NULL;
-  while(p_x->p_next != NULL)
+  Node* parent = NULL; // first element has to be the last one
+
+  while( current != NULL )
   {
-    Node* p_r = p_x->p_next;
-    p_x->p_next = p_l;
-    p_l = p_x;
-    p_x = p_r;
+    std::cout << "reversing " << current->value << std::endl;
+    Node* next = current->p_next;
+    current->p_next = parent;
+    parent = current;
+
+    current = next;
   }
-  p_x->p_next = p_l;
-  return p_x;
+  return parent;
 }
 
 Node* initList( int value=1)
@@ -112,6 +113,9 @@ int main()
   insertNode(init, 4);
   insertNode(init, 5);
   insertNode(init, 6);
+
+  printList( reverseList(init) );
+
   std::cerr << "is cyclic: " << (isCyclic(init)?"true":"false") << std::endl;
   /* create full cycle */
   insertNode(init, 7, init);
