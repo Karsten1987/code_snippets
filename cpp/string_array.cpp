@@ -4,6 +4,14 @@
 #include <vector>
 #include <tr1/unordered_map>
 
+#include <algorithm>
+
+struct IndexCount
+{
+  int count;
+  int index;
+};
+
 int firstNonRepeatingChar( std::string s )
 {
   if ( s.empty() )
@@ -15,31 +23,34 @@ int firstNonRepeatingChar( std::string s )
     return 0;
   }
 
-  std::tr1::unordered_map<std::string, int> map;
-  map.rehash(100);
-  typedef std::tr1::unordered_map<std::string, int>::iterator iter_t;
+  std::tr1::unordered_map<char, IndexCount> map;
+  map.rehash(s.size());
+  typedef std::tr1::unordered_map<char, IndexCount>::iterator iter_t;
 
   for (size_t i=0; i<s.size(); ++i)
   {
-    std::string si(1, s[i]);
-    map[si] +=1;
-    std::cout << "new value for " << si << " " << map[si] << std::endl;
-  }
-
-  // reversing since tr1 balbal
-  int idx = 0;
-  std::string c;
-  for (iter_t it=map.begin(); it!=map.end(); ++it)
-  {
-    std::cout << "probing it " << it->first <<  " with count " << it->second << std::endl;
-    if (it->second == 1)
+    if (map.find(s[i]) == map.end())
     {
-      idx = it->second;
-      c = it->first;
+      IndexCount idx;
+      idx.count = 1;
+      idx.index = i;
+      map[s[i]] = idx;
+    }
+    else
+    {
+      map[s[i]].count +=1;
     }
   }
-  std::cout << "first no repit " << c << std::endl;
-  return idx;
+
+  int lowest_index = map.begin()->second.index;
+  for (iter_t it=map.begin(); it!=map.end(); ++it)
+  {
+    if ( it->second.count == 1 && it->second.index < lowest_index )
+    {
+      lowest_index = it->second.index;
+    }
+  }
+  return lowest_index;
 }
 
 
@@ -57,7 +68,6 @@ T* rotateWithCopy( T s[], size_t k, size_t length )
 template<typename T>
 T* reverse( T s[], int left, int right )
 {
-  std::cout << "given left and right " << left << " " << right << std::endl;
   while( left < right )
   {
     T tmp = s[left];
@@ -74,11 +84,115 @@ T* rotateInPlace( T s[], int k, int length )
 {
   std::cout << "rotate in place" << std::endl;
   int a = length - k;
-  std::cout << " length a " << a << std::endl;
   s = reverse<T>( s, 0, a-1 );
   reverse<T>( s, a, length-1 );
   reverse<T>( s, 0, length-1 );
   return s;
+}
+
+bool containsOnlyDigits( std::string s )
+{
+  const int low_range = static_cast<int>('0');
+  const int high_range = static_cast<int>('9');
+
+  for (size_t i=0; i<s.size(); ++i)
+  {
+    int x = static_cast<int>(s[i]);
+    if (x< low_range || x>high_range)
+    {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+std::vector<std::string> getPermutations( std::string s )
+{
+  std::cout << "get permutations of " << s << " with size " << s.size() << std::endl;
+  if (s.empty())
+  {
+    return std::vector<std::string>();
+  }
+  if (s.size() == 1)
+  {
+    return std::vector<std::string>(1, ""+s[0]);
+  }
+  if (s.size() == 2)
+  {
+    std::vector<std::string> vec;
+    vec.reserve(2);
+    vec.push_back( s );
+    std::string swap(2, ' ');
+    swap[0] = s[1];
+    swap[1] = s[0];
+    vec.push_back( swap );
+    return vec;
+  }
+
+  std::vector<std::string> rec_vec = getPermutations( s.substr(1, s.size()-1) );
+  std::cout << "found " << rec_vec.size() << "permutations" << std::endl;
+
+  std::vector<std::string> permutations;
+  for (size_t i=0; i<rec_vec.size(); ++i)
+  {
+    for( size_t j=0; j<rec_vec[0].size(); ++j)
+    {
+      int lhs = j - 0;
+      int rhs = rec_vec[0].size() - j;
+      std::string permutation_string = rec_vec[i].substr(0,lhs)+s[0]+rec_vec[i].substr(j,rhs);
+      permutations.push_back(permutation_string);
+    }
+    permutations.push_back( rec_vec[i]+s[0] );
+  }
+  return permutations;
+}
+
+std::string unify( std::string s )
+{
+  std::sort( s.begin(), s.end() ); // n logn
+
+  std::string output;
+  output.reserve(s.size());
+
+  for (std::string::iterator it=s.begin();it!=s.end(); ++it)
+  {
+    if ( *it != *(it-1) )
+    {
+      output.push_back(*(it));
+    }
+  }
+  return output;
+}
+
+void unifyInPlace( std::string& s )
+{
+  if (s.empty() || s.size()==1)
+  {
+    return;
+  }
+
+  int tail =0;
+  for (std::string::iterator it=s.begin()+1; it!=s.end();++it)
+  {
+    bool seen = false;
+    for (size_t i=0; i<tail; ++i)
+    {
+      if (s[i] == *it)
+      {
+        std::cout << s[i] << " is already seen" << std::endl;
+        seen = true;
+        break;
+      }
+    }
+
+    if (!seen)
+    {
+      s[tail] = *it;
+      ++tail;
+    }
+  }
+  s.resize(tail);
 }
 
 int main()
@@ -92,9 +206,11 @@ int main()
   int idx = firstNonRepeatingChar(s);
   std::cout << "first non reapting char in " << s << " = " << s[idx] << std::endl;
 
-
+/*
   size_t k = 5;
-  std::cout << "rotate HelloWorld with k = " << k << ">> " << rotateWithCopy<char>( "HelloAWorld", 5, 11 ) << std::endl;
+  char ss[s.size()+1];
+  strcpy( ss, s.c_str() );
+  std::cout << "rotate " << s << " with k = " << k << ">> " << rotateWithCopy<char>( ss, 5, s.size() ) << std::endl;
 
   int arr[10] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
   //std::cout << "rotate int vec with k = " << k << " >> " << rotateWithCopy<int>( i, k, 10 )[0] << std::endl;
@@ -104,8 +220,25 @@ int main()
     std::cout << i[j] << " --> ";
   }
   std::cout << std::endl;
+*/
 
+  std::string only_digits = "13218373693216032160321";
+  std::cout << only_digits << " contains only digits? " << (containsOnlyDigits(only_digits)?"true":"false") << std::endl;
 
+  std::string mixed = "12312sadda321312312.31321321";
+  std::cout << mixed << " contains only digits? " << (containsOnlyDigits(mixed)?"true":"false") << std::endl;
 
+  std::vector<std::string> perms = getPermutations( "123" );
+  for (size_t i=0;i<perms.size();++i)
+  {
+    std::cout << perms[i] << std::endl;
+  }
+
+  std::string dups = "aaaabbbbaaaccccd";
+  std::cout << "original string " << dups << std::endl;
+  std::cout << "unified string " << unify(dups) << std::endl;
+  unifyInPlace(dups);
+  std::cout << "unified string " << dups << std::endl;
+  std::cout << "shutting down .." << std::endl;
   return 0;
 }

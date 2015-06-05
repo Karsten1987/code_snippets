@@ -9,6 +9,10 @@
 template<typename Map>
 void countChar( const std::string& s, Map& map )
 {
+  if ( (int x =1) != 0 )
+  {
+    std::cerr << "works" << std::endl;
+  }
   for (size_t i=0;i<s.size();++i)
   {
     map[ s[i] ] +=1;
