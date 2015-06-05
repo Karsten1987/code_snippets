@@ -3,6 +3,7 @@
 #include <cstring>
 #include <vector>
 #include <tr1/unordered_map>
+#include <bitset>
 
 #include <algorithm>
 
@@ -195,6 +196,27 @@ void unifyInPlace( std::string& s )
   s.resize(tail);
 }
 
+void unifyInPlace2( std::string& s )
+{
+  if (s.empty() || s.size()==1)
+  {
+    return;
+  }
+
+  long long hashmap = 0LL;
+  for (size_t i=0; i<s.size(); ++i)
+  {
+    if ((hashmap & (1LL << (s[i]-'a')) )>0) //duplicate found
+    {
+      s[i] = 0;
+    }
+    else
+    {
+      hashmap |= (1LL << (s[i]-'a'));
+    }
+  }
+}
+
 int main()
 {
   int a = static_cast<int>('a');
@@ -237,7 +259,7 @@ int main()
   std::string dups = "aaaabbbbaaaccccd";
   std::cout << "original string " << dups << std::endl;
   std::cout << "unified string " << unify(dups) << std::endl;
-  unifyInPlace(dups);
+  unifyInPlace2(dups);
   std::cout << "unified string " << dups << std::endl;
   std::cout << "shutting down .." << std::endl;
   return 0;
