@@ -13,7 +13,9 @@ struct Node
     rhs(NULL),
     value(i)
   {}
+
 };
+
 
 
 class BinaryTree
@@ -52,22 +54,10 @@ private:
     deleteTree(node->lhs);
     deleteTree(node->rhs);
 
-    std::cout << "delete node " << node->value << std::endl;
     delete node;
     node = NULL;
   }
 
-  void sortedVector( Node* node, std::vector<Node*>& vec ) const
-  {
-    if (node == NULL)
-    {
-      return;
-    }
-
-    sortedVector( node->lhs, vec );
-    vec.push_back( new Node(node->value) );
-    sortedVector( node->rhs, vec );
-  }
 
 
 
@@ -103,6 +93,7 @@ public:
   {
     if (lhs == rhs) // we have a leaf
     {
+      std::cerr << "leaf node " << vec[lhs]->value << std::endl;
       return;
     }
 
@@ -113,7 +104,8 @@ public:
 
     if (parent == NULL)
     {
-      parent = root;
+      std::cerr << "set parent in insertion list " << std::endl;
+      this->root = root;
       return;
     }
     if (root->value < parent->value)
@@ -124,6 +116,30 @@ public:
     {
       parent->rhs = root;
     }
+  }
+
+  void sortedVector( Node* node, std::vector<Node*>& vec ) const
+  {
+    if (node == NULL)
+    {
+      return;
+    }
+
+    sortedVector( node->lhs, vec );
+    vec.push_back( new Node(node->value) );
+    sortedVector( node->rhs, vec );
+  }
+
+  void sortedVectorReverse( Node* node, std::vector<Node*>& vec ) const
+  {
+    if (node==NULL)
+    {
+      return;
+    }
+
+    sortedVectorReverse( node->rhs, vec );
+    vec.push_back( new Node(node->value) );
+    sortedVectorReverse( node->lhs, vec );
   }
 
   void balanceTree( )
@@ -145,6 +161,7 @@ public:
     std::cerr << "NULL" <<std::endl;
 
     deleteTree();
+    root = NULL;
     insertFromList( vec, 0, static_cast<int>(vec.size()-1), root );
   }
 
@@ -223,6 +240,8 @@ public:
              6      14
             / \    /  \
            5   8  11  18
+              / \
+             7   9
 */
 
 int main()
@@ -247,8 +266,30 @@ int main()
   std::cout << "print BFSorder" << std::endl;
   bt.printTree( &BinaryTree::printBFS );
 
+  std::vector<Node*> unbalanced_tree;
+  bt.sortedVector(  bt.root, unbalanced_tree );
   std::cout << "balancing the tree" << std::endl;
   bt.balanceTree();
+  std::vector<Node*> balanced_tree;
+  bt.sortedVector( bt.root, balanced_tree );
+  std::vector<Node*> reversed_tree;
+  bt.sortedVectorReverse( bt.root, reversed_tree );
+
+  for (int i=0; i<reversed_tree.size();++i)
+  {
+    std::cerr << reversed_tree[i]->value << " --> ";
+  }
+  std::cerr << std::endl;
+
+  for (int i=0; i<balanced_tree.size(); ++i)
+  {
+    std::cerr << unbalanced_tree[i]->value << " " << balanced_tree[i]->value << std::endl;
+  }
+  if (unbalanced_tree == balanced_tree )
+  {
+    std::cerr << "balanced tree worked out " << std::endl;
+  }
+
   std::cout << "print BFSorder" << std::endl;
   bt.printTree( &BinaryTree::printBFS );
   std::cout << "gonna delete tree" << std::endl;

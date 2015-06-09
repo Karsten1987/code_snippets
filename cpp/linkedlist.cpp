@@ -106,6 +106,38 @@ bool isCyclic( Node* init )
   return false;
 }
 
+Node* getCycleStart( Node* init )
+{
+  Node* slow_runner = init;
+  Node* fast_runner = init;
+
+  Node* meeting_point = NULL;
+  while (fast_runner->p_next != NULL /*&& fast_runner->p_next->p_next != NULL*/)
+  {
+    slow_runner = slow_runner->p_next;
+    fast_runner = fast_runner->p_next->p_next;
+    if (slow_runner == fast_runner)
+    {
+      meeting_point = fast_runner;
+      break;
+    }
+  }
+
+  if (meeting_point == NULL)
+  {
+    return NULL;
+  }
+
+  slow_runner = init;
+  std::cerr << "meeting point at: " << fast_runner->value << std::endl;
+  while (slow_runner != fast_runner)
+  {
+    slow_runner = slow_runner->p_next;
+    fast_runner = fast_runner->p_next;
+  }
+  return slow_runner;
+}
+
 int main()
 {
   Node* n1 = new Node();
@@ -128,18 +160,19 @@ int main()
   insertNode(init, 4);
   insertNode(init, 5);
   insertNode(init, 6);
-
-  deleteFirst(init, 3);
+  insertNode(init, 7);
+  
+  //deleteFirst(init, 3);
   printList(init);
 
-  printList( reverseList(init) );
+  //printList( reverseList(init) );
 
-  std::cerr << "is cyclic: " << (isCyclic(init)?"true":"false") << std::endl;
-  /* create full cycle */
-  insertNode(init, 7, init);
-  std::cerr << "detected full cycle: " << (isCyclic(init)?"true":"false") << std::endl;
-
-  //insertNode(init->p_next, 8, init->p_next->p_next );
   //std::cerr << "is cyclic: " << (isCyclic(init)?"true":"false") << std::endl;
+  /* create full cycle */
+  //insertNode(init, 7, init);
+  //std::cerr << "detected full cycle: " << (isCyclic(init)?"true":"false") << std::endl;
+
+  insertNode(init->p_next, 8, init->p_next->p_next->p_next->p_next );
+  std::cerr << "is cyclic: " << (getCycleStart(init)->value) << std::endl;
   return 0;
 }

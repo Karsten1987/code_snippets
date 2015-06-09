@@ -217,6 +217,55 @@ void unifyInPlace2( std::string& s )
   }
 }
 
+int isSubstring( std::string s, std::string sub )
+{
+  if (s.size()<sub.size())
+  {
+    return -1;
+  }
+  if (s.size()==0 || sub.size()==0)
+  {
+    return -1;
+  }
+
+  for (int i=0;i<s.size();++i)
+  {
+    std::cerr << "processing " << s[i] << std::endl;
+    bool isSub = true;
+    for (int j=0;j<sub.size();++j)
+    {
+      if (s[i] != sub[j])
+      {
+        std::cerr << "index don't match" << std::endl;
+        isSub = false;
+        break;
+      }
+      else
+      {
+        ++i;
+      }
+    }
+    if (isSub)
+    {
+      return i - sub.size();
+    }
+  }
+  return -1;
+}
+
+std::string::const_iterator find( const std::string& s, char c )
+{
+  std::string::const_iterator res = s.end();
+  for (std::string::const_iterator it=s.begin();it!=s.end();++it)
+  {
+    if (*it == c)
+    {
+      return it;
+    }
+  }
+  return res;
+}
+
 int main()
 {
   int a = static_cast<int>('a');
@@ -256,11 +305,23 @@ int main()
     std::cout << perms[i] << std::endl;
   }
 
-  std::string dups = "aaaabbbbaaaccccd";
+  std::string dups = "aazqasdmjjiohyuHaabbbbaaaccccd";
   std::cout << "original string " << dups << std::endl;
   std::cout << "unified string " << unify(dups) << std::endl;
   unifyInPlace2(dups);
   std::cout << "unified string " << dups << std::endl;
   std::cout << "shutting down .." << std::endl;
+
+
+  std::string s_long = "thisisasuperlongstring";
+  std::string s_sub = "string";
+  int isSub = isSubstring( s_long, s_sub );
+  if (isSub != -1)
+  {
+    std::cerr << s_long << " does contain " << s_sub << " starting from idx " << isSub << std::endl;
+  }
+  std::string::const_iterator it = find( s_long, 's' );
+  std::cerr << "found first occurance " << (it-s_long.begin()) << std::endl;
+
   return 0;
 }
