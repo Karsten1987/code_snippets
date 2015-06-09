@@ -89,7 +89,7 @@ public:
     insert(node, root);
   }
 
-  void insertFromList( const std::vector<Node*>& vec, int lhs, int rhs, Node* parent )
+  void insertFromList( const std::vector<Node*>& vec, int lhs, int rhs, Node* const parent )
   {
     if (lhs == rhs) // we have a leaf
     {

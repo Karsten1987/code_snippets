@@ -99,36 +99,31 @@ void toVector( Node* root, std::vector<Node*>& vec )
   return;
 }
 
-void toBST( std::vector<Node*>& vec, int lhs, int rhs, Node* root )
+Node* toBST( const std::vector<Node*>& vec, int lhs, int rhs )
 {
-  if ( vec.size() == 0)
+  if ( vec.empty() )
   {
-    root = NULL;
+    return NULL;
+  }
+
+  if ( lhs>rhs )
+  {
+    return NULL;
   }
 
   int middle_idx = lhs + (rhs-lhs)/2;
-
-  if (root == NULL)
-  {
-    root = vec[middle_idx];
-  }
-  toBST( vec, 0, middle_idx-1, root );
-  toBST( vec, middle_idx+1, rhs, root );
-  return;
-  // half the vector, get middle index as root
+  Node* const root = vec[middle_idx];
+  root->lhs = toBST( vec, lhs, middle_idx-1);
+  root->rhs = toBST( vec, middle_idx+1, rhs);
+  return root;
 }
 
-void balanceTree( Node* root )
+void balanceTree( Node*& root )
 {
   std::vector<Node*> vec;
   toVector(root, vec);
-  for (auto i=0; i<vec.size(); ++i)
-  {
-    std::cout << vec[i]->key << std::endl;
-  }
-  root = NULL;
-  toBST( vec, 0, vec.size()-1, root );
-  printInorder( root );
+
+  root = toBST( vec, 0, vec.size()-1 );
 }
 
 int main()
@@ -139,9 +134,13 @@ int main()
   insertNode( new Node(3,3), root );
   insertNode( new Node(4,4), root );
   insertNode( new Node(5,5), root );
+  insertNode( new Node(6,6), root );
+  insertNode( new Node(7,7), root );
+  insertNode( new Node(8,8), root );
 
   balanceTree( root );
-  //printBFS( root );
+  std::cout << " root key lhs " << root->lhs->key <<std::endl;
+  printBFS( root );
 
 
   return 0;
