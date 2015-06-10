@@ -126,6 +126,44 @@ void balanceTree( Node*& root )
   root = toBST( vec, 0, vec.size()-1 );
 }
 
+int maxDepth( Node* root )
+{
+  if (root==NULL)
+  {
+    return 0;
+  }
+
+  int lhs_depth = maxDepth( root->lhs );
+  int rhs_depth = maxDepth( root->rhs );
+  if ( lhs_depth > rhs_depth )
+  {
+    return 1+lhs_depth;
+  }
+  else
+  {
+    return 1+rhs_depth;
+  }
+}
+
+int minDepth( Node* root )
+{
+  if (root==NULL)
+  {
+    return 0;
+  }
+
+  int lhs_depth = minDepth( root->lhs );
+  int rhs_depth = minDepth( root->rhs );
+  if ( lhs_depth < rhs_depth )
+  {
+    return 1+lhs_depth;
+  }
+  else
+  {
+    return 1+rhs_depth;
+  }
+}
+
 int main()
 {
   Node* root = new Node(1,1);
@@ -138,7 +176,17 @@ int main()
   insertNode( new Node(7,7), root );
   insertNode( new Node(8,8), root );
 
+
+  int max_depth = maxDepth( root );
+  int min_depth = minDepth( root );
+  std::cout << "maximal depth before balancing " << max_depth << std::endl;
+  std::cout << "minimal depth before balancing " << min_depth << std::endl;
+
   balanceTree( root );
+  max_depth = maxDepth( root );
+  min_depth = minDepth( root );
+  std::cout << "maximal depth after balancing " << max_depth << std::endl;
+  std::cout << "minimal depth before balancing " << min_depth << std::endl;
   std::cout << " root key lhs " << root->lhs->key <<std::endl;
   printBFS( root );
 

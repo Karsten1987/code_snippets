@@ -21,7 +21,11 @@ int main()
     std::cerr << my_vec[i] << std::endl;
   }
 
+  std::vector<int> lhs = {1,2,3,4,5};
+  std::vector<int> rhs = {6,7,8,9,10};
 
+  lhs.insert( lhs.end(), rhs.begin(), rhs.end() );
+  std::cout << "new size of lhs " << lhs.size() << std::endl;
 
   return 0;
 }
