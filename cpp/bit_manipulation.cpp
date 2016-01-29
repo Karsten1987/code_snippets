@@ -1,5 +1,6 @@
 #include <iostream>
 #include <bitset>
+#include <vector>
 
 #include <cmath>
 
@@ -76,6 +77,26 @@ void compareAndPrint( int a, int b )
   print( a^b );
 }
 
+bool isSingleChiffe( std::vector<int> vec )
+{
+  std::cout << "isSingleChiffe " << std::endl;
+
+  int hashmap = 0;
+
+  for (auto k=0;k<vec.size();++k)
+  {
+    if ( (hashmap & (1<<vec[k]))>0)
+    {
+      return false;
+    }
+    else
+    {
+      hashmap |= (1<<vec[k]);
+    }
+  }
+  return true;
+}
+
 int main()
 {
   print( 78 );
@@ -102,4 +123,8 @@ int main()
   std::cout << "comparison " << (4 & (1<<3)) << std::endl;
   int k = 78;
   std::cout << "active bits in  "<< k << " " << countBits(k) << std::endl;
+
+  std::vector<int> vec = {1,2,3,4,5,6};
+  bool is_single = isSingleChiffe( vec );
+  std::cout << "is single " << (is_single?"true":"false") << std::endl;
 }
