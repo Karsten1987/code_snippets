@@ -23,7 +23,6 @@ bool isAnagram( std::string s1, std::string s2 )
 
 int main()
 {
-
   std::cerr << " is anagram " << isAnagram( "abcd", "dcba" ) << std::endl;
   return 0;
 }
