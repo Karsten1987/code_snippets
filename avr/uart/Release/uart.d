@@ -1,0 +1,1 @@
+uart.d: ../uart.c

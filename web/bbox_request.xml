@@ -1,0 +1,9 @@
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:v1="http://schemas.conversesolutions.com/xsd/dmticta/v1">
+<soapenv:Header/>
+<soapenv:Body>
+<u:GetVolume xmlns:u="urn:schemas-upnp-org:service:RenderingControl:1">
+<InstanceID>0</InstanceID>
+<Channel>11</Channel>
+</u:GetVolume>
+</soapenv:Body>
+</soapenv:Envelope>
