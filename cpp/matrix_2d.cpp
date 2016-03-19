@@ -3,7 +3,7 @@
 #include <array>
 #include <vector>
 
-template<class T>
+template<class T, int Row=3, int Col=3>
 class Matrix2D
 {
 private:
@@ -11,10 +11,16 @@ private:
   size_t row_, col_;
 
 public:
+  Matrix2D():
+    data_(Row*Col, T()),
+    row_(Row),
+    col_(Col)
+  {}
+
   Matrix2D( size_t row, size_t col ):
     data_(row*col, T()),
-    row_(std::move(row)),
-    col_(std::move(col))
+    row_(row),
+    col_(col)
   {}
 
   void print() const
@@ -99,7 +105,7 @@ public:
 int main()
 {
 
-  Matrix2D<int> m(3,3);
+  Matrix2D<int> m;
   m.print();
 
   m(0,0) = 2;
@@ -107,7 +113,7 @@ int main()
   m(2,2) = 2;
   m.print();
 
-  Matrix2D<int> m1(3,3);
+  Matrix2D<int> m1;
   m1(0,0) = 3;
   m1(1,1) = 3;
   m1(2,2) = 3;

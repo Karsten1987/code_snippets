@@ -4,6 +4,7 @@
 #include <thread>
 #include <mutex>
 #include <future>
+#include <csignal>
 
 std::mutex mutex_print;
 
@@ -12,38 +13,130 @@ struct Status
   size_t stat;
 };
 
-void printStatus( std::string prefix, const Status& status ) noexcept
+//auto fut = std::async(std::launch::async, asyncStatusPrint, std::ref(st));
+
+bool shutdown_requested;
+std::atomic<int> account;
+//int account;
+
+void loopIncrement()
 {
-  std::lock_guard<std::mutex> lg(mutex_print);
-  auto time_point = std::chrono::high_resolution_clock::now();
-  std::time_t now_c = std::chrono::system_clock::to_time_t(time_point);
-  //std::cout << std::ctime(&now_c) << " Current status value:\t" << status.stat << std::endl;
-  std::cout << prefix << ":\t" << status.stat << std::endl;
+  while (!shutdown_requested)
+  {
+    {
+      std::lock_guard<std::mutex> lg(mutex_print);
+      std::this_thread::sleep_for(std::chrono::milliseconds(500));
+      //std::cout << "increment " << account << std::endl;
+      ++account;
+    }
+    std::this_thread::sleep_for(std::chrono::milliseconds(500));
+  }
+  std::cout << "Shutting down increment loop" << std::endl;
 }
 
-void asyncStatusPrint( Status& status ) noexcept
+void loopDecrement()
 {
-  while (status.stat != 0)
+  while (!shutdown_requested)
   {
-    printStatus( "In async thread", status);
-    --status.stat;
+    {
+      std::lock_guard<std::mutex> lg(mutex_print);
+      std::this_thread::sleep_for(std::chrono::milliseconds(500));
+      //std::cout << "decrement " << account << std::endl;
+      --account;
+    }
     std::this_thread::sleep_for(std::chrono::seconds(1));
   }
+  std::cout << "Shutting down decrement loop" << std::endl;
 }
+
+void loopDuplicate()
+{
+  while (!shutdown_requested)
+  {
+    auto start = std::chrono::steady_clock::now();
+    {
+      std::lock_guard<std::mutex> lg(mutex_print);
+      std::this_thread::sleep_for(std::chrono::milliseconds(300)); // fake work
+      //std::cout << "duplicate " << account << std::endl;
+      account += account;
+    }
+    auto end = std::chrono::steady_clock::now();
+    auto dt = std::chrono::duration_cast<std::chrono::milliseconds>(end-start);
+
+    if (dt > std::chrono::milliseconds(1000))
+    {
+      std::cout << "missed cycle in duplicate " << dt.count() << std::endl;
+    }
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(1000 - dt.count()));
+  }
+  std::cout << "Shutting down duplicate loop" << std::endl;
+}
+
+void loopBisect()
+{
+  while (!shutdown_requested)
+  {
+    {
+      std::lock_guard<std::mutex> lg(mutex_print);
+      std::this_thread::sleep_for(std::chrono::milliseconds(500));
+      //std::cout << "bisect " << account << std::endl;
+      account -= account/2;
+    }
+    std::this_thread::sleep_for(std::chrono::seconds(5));
+  }
+  std::cout << "Shutting down bisect loop" << std::endl;
+}
+
+void shutdown(int signal)
+{
+  shutdown_requested = true;
+}
+
+struct S
+{
+  int i = 0;
+
+  void operator()()
+  {
+    while (!shutdown_requested)
+    {
+      std::cout << "Having new int " << ++i << std::endl;
+      std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+    }
+  }
+};
 
 int main()
 {
-  Status st = {10};
+  std::signal(SIGINT, shutdown);
 
-  auto fut = std::async(std::launch::async, asyncStatusPrint, std::ref(st));
+  S s;
+  //std::thread t1(std::ref(S())); // fails
+  std::thread t1(s);
+  std::this_thread::sleep_for(std::chrono::milliseconds(5002));
+  std::cout << "transmission of thread ownership" << std::endl;
+  std::thread t2 = std::move(t1);
 
-  while (st.stat != 0)
-  {
-    printStatus("In main thread", st);
-    --st.stat;
-    std::this_thread::sleep_for(std::chrono::seconds(2));
-  }
-  fut.get();
+  std::thread thread_inc(loopIncrement);
+  std::thread thread_dec(loopDecrement);
+  std::thread thread_dup(loopDuplicate);
+  std::thread thread_bis(loopBisect);
 
+  //while (!shutdown_requested)
+  //{
+  //  std::cout << "Current account balance " << account << std::endl;
+  //  std::this_thread::sleep_for(std::chrono::seconds(1));
+  //}
+
+  thread_inc.join();
+  thread_dec.join();
+  thread_dup.join();
+  thread_bis.join();
+
+  // t1.join(); system error!
+  t2.join();
+
+  std::cout << "shutting down! Good bye.." << std::endl;
   return 0;
 }
