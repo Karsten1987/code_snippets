@@ -37,6 +37,31 @@ struct is_awesome
   typedef T type;
 };
 
+// declaration only
+template<class T, class ... P0ToN>
+struct is_valid;
+
+template<class T>
+struct is_valid<T>
+{
+};
+
+template<class T, class ... P1ToN>
+struct is_valid<T,T,P1ToN...>
+{
+  typedef T type;
+};
+
+template<class T, class P0, class ... P1ToN>
+struct is_valid<T, P0, P1ToN...> : is_valid<T, P1ToN...>
+{};
+
+template<class T, class = typename is_valid<T, int, float, double>::type>
+struct is_number
+{
+  typedef T type;
+};
+
 int main()
 {
 
@@ -52,6 +77,11 @@ int main()
 
   //is_awesome<double>::type awesome_d_d = 15; // does not compile!
   is_awesome<const double>::type aawesome_d_d = 15;
+
+  is_number<double>::type n_d = 15;
+  is_number<float>::type n_f = 15;
+  is_number<int>::type n_i = 15;
+  //is_number<std::string>::type n_s = "hello"; // does not compile!
 }
 
 
