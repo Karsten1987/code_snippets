@@ -3,17 +3,7 @@
 #include <vector>
 #include <string>
 
-/*
- * merge sort
- */
-void printVector( std::vector<int>& vec )
-{
-  for (size_t i=0;i<vec.size();++i)
-  {
-    std::cerr << vec[i] << " --> ";
-  }
-  std::cerr << std::endl;
-}
+#include "helper.h"
 
 std::vector<int> merge( std::vector<int>& vec, std::vector<int>& lhs, std::vector<int>& rhs )
 {
@@ -134,15 +124,15 @@ int findRotationIndex( const std::vector<int> vec, int lhs, int rhs )
 
 int main()
 {
-  std::vector<int> vec_i = {1,2,3,4,5};
+  std::vector<int> vec_i = {15,1,2,3,4,5};
   vec_i = mergeSort( vec_i );
 
   int idx = findInsertIndex( vec_i, 3, 0, vec_i.size()-1 );
   std::cout << "find insertion (3) " << idx << std::endl;
-  printVector( vec_i );
+  helper::print_vector( vec_i );
 
   std::vector<int> vec_rot = {4,5,1,2,3};
-  printVector( vec_rot );
+  helper::print_vector( vec_rot );
   int rot_idx = findRotationIndex( vec_rot, 0, vec_rot.size()-1);
   std::cout << "find rotation index (2) " << rot_idx << std::endl;
   rot_idx = findRotationIndex( vec_i, 0, vec_i.size()-1);

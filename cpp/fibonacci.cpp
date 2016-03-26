@@ -1,19 +1,29 @@
 #include <iostream>
 
+template<int lhs, int rhs, int counter>
+struct fibonacci_t
+{
+  static constexpr int value = fibonacci_t<rhs, lhs+rhs, counter-1>::value;
+};
 
-void fibonacci( size_t lhs, size_t rhs, size_t counter )
+template<int lhs, int rhs>
+struct fibonacci_t<lhs, rhs, 0>
+{
+  static constexpr int value = lhs+rhs;
+};
+
+int fibonacci( size_t lhs, size_t rhs, size_t counter )
 {
   if (counter == 0)
   {
-    std::cout << std::endl;
-    return;
+    return lhs+rhs;
   }
-  std::cout << lhs+rhs << " ";
   return fibonacci( rhs, lhs+rhs, --counter);
 }
 
 int main()
 {
-  fibonacci(0, 1, 10);
+  std::cout << "recursive function " << fibonacci(0, 1, 10) << std::endl;
+  std::cout << "recursive template " << fibonacci_t<0,1,10>::value << std::endl;
   return 0;
 }
