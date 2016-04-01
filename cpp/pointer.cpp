@@ -83,4 +83,19 @@ int main()
   vec.push_back(&f3);
 
   std::cerr << "float pointer0 :" << *vec[0] << std::endl;
+
+  auto i = 1;
+  auto& ri = i;
+  auto* pi = &ri;
+
+  auto** ppi = &pi;
+  std::cout << "double deref " << **ppi << std::endl;
+
+  i = 3;
+  std::cout << "double deref after setting i to 3 " << **ppi << std::endl;
+
+  *pi = 2;
+  std::cout << "double deref after modif " << **ppi << std::endl;
+
+  return 0;
 }
