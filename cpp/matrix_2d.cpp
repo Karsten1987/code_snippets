@@ -3,7 +3,36 @@
 #include <array>
 #include <vector>
 
-template<class T, int Row=3, int Col=3>
+template<class T, class ...P0ToN>
+struct is_number;
+
+template<class T>
+struct is_number<T>
+{
+  static constexpr auto value = false;
+};
+
+template<class T, class ...P1ToN>
+struct is_number<T, T, P1ToN...>
+{
+  static constexpr auto value = true;
+};
+
+template<class T, class P0, class ...P1ToN>
+struct is_number<T, P0, P1ToN...> : is_number<T, P1ToN...>
+{
+};
+
+template<bool, class T>
+struct enable_if;
+
+template<class T>
+struct enable_if<true, T>
+{
+  typedef T type;
+};
+
+template<class T, int Row=3, int Col=3, typename enable_if<is_number<T, double, float, int>::value, T>::type* = nullptr>
 class Matrix2D
 {
 private:
@@ -121,5 +150,7 @@ int main()
 
   Matrix2D<int> m2 = m * m1;
   m2.print();
+
+  //Matrix2D<std::string> does_no_compile;
   return 0;
 }
