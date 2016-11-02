@@ -1,30 +1,13 @@
+#if __cplusplus
+extern "C"
+{
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-typedef struct _element
-{
-  const char* element_data;
-} Element;
-
-typedef struct _data_array
-{
-  Element* data;
-  unsigned int size;
-} DataArray;
-
-typedef struct _index
-{
-  unsigned int index;
-  const char* label;
-} Index;
-
-typedef struct _map
-{
-  Index* index_array;
-  DataArray* data_arrays;
-  unsigned int size;
-} Map;
+#include "map.h"
 
 void append_to_data_array(DataArray* data_array, Element data)
 {
@@ -33,7 +16,7 @@ void append_to_data_array(DataArray* data_array, Element data)
   data_array->data[data_array->size-1] = data;
 }
 
-void append_to_map(Map* m, const char* label, Element data)
+void append(Map* m, const char* label, Element data)
 {
   // check wether the label exits already
   for (unsigned int i=0; i<m->size; ++i)
@@ -59,6 +42,37 @@ void append_to_map(Map* m, const char* label, Element data)
   // reallocate the actual data array
   m->data_arrays = realloc(m->data_arrays, m->size*sizeof(DataArray));
   append_to_data_array(&m->data_arrays[idx.index], data);
+}
+
+DataArray* get_map_index(Map* m, const char* label)
+{
+  for (unsigned int i=0; i<m->size; ++i)
+  {
+    if (strcmp(m->index_array[i].label, label) == 0)
+    {
+      return &m->data_arrays[i];
+    }
+  }
+  return NULL;
+}
+
+void print_data_array(const DataArray* da)
+{
+    for (unsigned int i=0; i<da->size; ++i)
+    {
+      printf("%s\t", da->data[i].element_data);
+    }
+    printf("\n");
+}
+
+void print_map(const Map* m)
+{
+  printf("Map size %u\n", m->size);
+  for (unsigned int i=0; i<m->size; ++i)
+  {
+    printf("label %s ::: ", m->index_array[i].label);
+    print_data_array(&(m->data_arrays[i]));
+  }
 }
 
 Map initialize_map()
@@ -107,51 +121,24 @@ Map initialize_map()
   return m;
 }
 
-DataArray* get_map_index(Map* m, const char* label)
-{
-  for (unsigned int i=0; i<m->size; ++i)
-  {
-    if (strcmp(m->index_array[i].label, label) == 0)
-    {
-      return &m->data_arrays[i];
-    }
-  }
-  return NULL;
-}
-
-void print_data_array(const DataArray* da)
-{
-    for (unsigned int i=0; i<da->size; ++i)
-    {
-      printf("%s\t", da->data[i].element_data);
-    }
-    printf("\n");
-}
-
-void print_map(const Map* m)
-{
-  printf("Map size %u\n", m->size);
-  for (unsigned int i=0; i<m->size; ++i)
-  {
-    printf("label %s ::: ", m->index_array[i].label);
-    print_data_array(&(m->data_arrays[i]));
-  }
-}
-
 int main()
 {
   Map m = initialize_map();
   print_map(&m);
 
   Element d_new = {.element_data = "1_3"};
-  append_to_map(&m, "Index 1", d_new);
+  append(&m, "Index 1", d_new);
   print_map(&m);
 
   Element d_new_new = {.element_data = "4_1"};
-  append_to_map(&m, "Index 4", d_new_new);
+  append(&m, "Index 4", d_new_new);
   print_map(&m);
 
   DataArray* index_1 = get_map_index(&m, "Index 1");
   print_data_array(index_1);
   return 0;
 }
+
+#if __cplusplus
+}
+#endif
