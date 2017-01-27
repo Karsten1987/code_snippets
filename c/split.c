@@ -17,13 +17,19 @@ split(const char * string, char delimiter)
     return empty_array;
   }
 
-  size_t offset = 0;
+  // does it start with a delmiter?
+  size_t lhs_offset = 0;
+  if (string[0] == delimiter)
+    lhs_offset = 1;
+
+  // does it end with a delimiter?
+  size_t rhs_offset = 0;
   if (string[strlen(string)-1] == delimiter)
-    offset = 1;
+    rhs_offset = 1;
 
   string_array_t tokens;
   tokens.size = 1;
-  for (size_t i = 0; i < strlen(string) - offset; ++i)
+  for (size_t i = lhs_offset; i < strlen(string) - rhs_offset; ++i)
   {
     if (string[i] == delimiter)
     {
@@ -33,29 +39,35 @@ split(const char * string, char delimiter)
   tokens.data = malloc(tokens.size * sizeof(char *));
 
   size_t token_counter = 0;
-  size_t lhs = 0;
-  size_t rhs = 0;
-  for (; rhs < strlen(string) - offset; ++rhs)
+  int lhs = 0 + lhs_offset;
+  int rhs = 0 + lhs_offset;
+  for (; rhs < strlen(string) - rhs_offset; ++rhs)
   {
     if (string[rhs] == delimiter)
     {
-      if (rhs-lhs > 1)
+      if (rhs - lhs < 1)
       {
-        tokens.data[token_counter] = malloc((rhs - lhs + 1) * sizeof(char));
-        snprintf(tokens.data[token_counter], (rhs - lhs + 1), "%s", string+lhs);
-        ++token_counter;
-        lhs = rhs;
+        --tokens.size;
+        free(tokens.data[tokens.size]);
+        tokens.data[tokens.size] = NULL;
       } else {
-        printf("neighbouring delimiter found\n");
-        free(tokens.data[--tokens.size -1]);
-        tokens.data[tokens.size -1] = 0;
-        ++lhs;
-        ++rhs;
+        tokens.data[token_counter] = malloc((rhs - lhs + 2) * sizeof(char));
+        snprintf(tokens.data[token_counter], (rhs - lhs + 1), "%s", string + lhs);
+        ++token_counter;
       }
+      lhs = rhs;
+      ++lhs;
     }
   }
-  tokens.data[token_counter] = malloc((rhs - lhs + 1) * sizeof(char));
-  snprintf(tokens.data[token_counter], (rhs - lhs + 1), "%s", string+lhs);
+  if (rhs - lhs < 1)
+  {
+    --tokens.size;
+    free(tokens.data[tokens.size]);
+    tokens.data[tokens.size] = NULL;
+  } else {
+    tokens.data[token_counter] = malloc((rhs - lhs + 2) * sizeof(char));
+    snprintf(tokens.data[token_counter], (rhs - lhs + 1), "%s", string + lhs);
+  }
   return tokens;
 }
 
@@ -65,14 +77,17 @@ void test(const char * test_string)
   printf("Found %zu tokens\n", tokens.size);
   for (size_t i = 0; i < tokens.size; ++i)
   {
-    printf("%s\n", tokens.data[i]);
+    printf("#%zu: %s\n", i, tokens.data[i]);
   }
 }
 
 int main()
 {
-  test("hello/world//namespace/");
+  test("hello/world/namespace/");
   test("hello/world/namespace");
+  test("/hello/world/namespace");
+  test("/hello/world/namespace/");
+  test("/hello//world/namespace//");
   test("");
   test("//");
   test(NULL);
