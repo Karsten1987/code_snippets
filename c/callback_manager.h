@@ -14,7 +14,7 @@ typedef struct _callback
 
 void register_callback( void* fcn );
 
-void invoke_callback( void );
+void invoke_callback();
 
 callback_t* get_callback( void );
 

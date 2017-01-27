@@ -10,8 +10,9 @@ void on_callback()
 int main()
 {
   register_callback(on_callback);
-  printf("Going to invoke the callback now\n");
-  callback_t* callback = get_callback();
-  ((void(*)())callback->callback_function_ptr)();
+  invoke_callback();
+  //printf("Going to invoke the callback now\n");
+  //callback_t* callback = get_callback();
+  //((void(*)())callback->callback_function_ptr)();
   return 0;
 }
