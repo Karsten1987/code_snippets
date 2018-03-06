@@ -39,13 +39,14 @@ public:
       {
         break;
       }
+
       auto neighbours = map_.get_valid_neighbours(head);
       for (auto neighbour : neighbours)
       {
         map_.set_visited(neighbour);
         bfs_queue.push(neighbour);
-        PathNode path_node;
-        path_node.parent = head;
+        GridValue<PathNode> path_node;
+        path_node.value.parent = head;
         path_map_.set_value(neighbour, path_node);
       }
       map_.print();
@@ -70,7 +71,8 @@ public:
       return false;
     };
 
-    std::priority_queue<GridIndex, std::vector<GridIndex>, decltype(compare_grid_index)> greedy_queue(compare_grid_index);
+    std::priority_queue<GridIndex, std::vector<GridIndex>, decltype(compare_grid_index)>
+      greedy_queue(compare_grid_index);
     GridIndex start = map_.get_start_index();
     greedy_queue.push(map_.get_start_index());
 
@@ -87,10 +89,14 @@ public:
       auto neighbours = map_.get_valid_neighbours(head);
       for (auto neighbour : neighbours)
       {
-        map_.set_visited(neighbour);
+        if (neighbour != map_.get_start_index()
+            && neighbour != map_.get_goal_index())
+        {
+          map_.set_visited(neighbour);
+        }
         greedy_queue.push(neighbour);
-        PathNode path_node;
-        path_node.parent = head;
+        GridValue<PathNode> path_node;
+        path_node.value.parent = head;
         path_map_.set_value(neighbour, path_node);
       }
       map_.print();
@@ -98,18 +104,21 @@ public:
       std::this_thread::sleep_for(std::chrono::seconds(1));
     }
 
-    PathNode path_goal = path_map_.get_value(goal);
+    GridValue<PathNode> path_goal = path_map_.get_value(goal);
     GridIndex grid_index = goal;
     bool start_reached = false;
+    GridValue<std::uint8_t> path_printer {0, " p |"};
+
     while (!start_reached)
     {
-      if (grid_index.row == start.row && grid_index.col == start.col)
-      {
+      if (grid_index.row == start.row && grid_index.col == start.col) {
         start_reached = true;
       }
+
       std::cout << "Row: " << grid_index.row << " Col: " << grid_index.col << std::endl;
-      path_goal = path_map_.get_value(path_goal.parent);
-      grid_index = path_goal.parent;
+      map_.set_value(grid_index, path_printer);
+      path_goal = path_map_.get_value(path_goal.value.parent);
+      grid_index = path_goal.value.parent;
     }
   }
 

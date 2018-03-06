@@ -24,5 +24,6 @@ int main(int argc, char** argv)
   astar::Astar astar(map);
   //astar.traverse_bfs();
   astar.traverse_greedy_bfs();
+  map.print();
   return 0;
 }

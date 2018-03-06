@@ -83,7 +83,7 @@ bool isSingleChiffe( std::vector<int> vec )
 
   int hashmap = 0;
 
-  for (auto k=0;k<vec.size();++k)
+  for (auto k=0u; k < vec.size(); ++k)
   {
     if ( (hashmap & (1<<vec[k]))>0)
     {
@@ -107,7 +107,7 @@ int main()
   int a = 12321;
   int b = 454;
   int max = 0;
-  int mask = (1 << rhs-1);
+  int mask = (1 << (rhs-1));
   for (int i=rhs;i<lhs;++i)
   {
     mask = mask |= (1 << i);
@@ -127,4 +127,9 @@ int main()
   std::vector<int> vec = {1,2,3,4,5,6};
   bool is_single = isSingleChiffe( vec );
   std::cout << "is single " << (is_single?"true":"false") << std::endl;
+
+  vec = {1,3,5,6,8,9,10};
+  for (auto i : vec) {
+    std::cout << "i: " << i << "\ti^1: " << (i^1) << std::endl;
+  }
 }
