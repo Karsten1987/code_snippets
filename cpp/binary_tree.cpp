@@ -174,6 +174,7 @@ public:
 
     std::cout << root->value << std::endl;
     printPreorder( root->lhs );
+    std::cout << "branch" << std::endl;
     printPreorder( root->rhs );
   }
 
@@ -248,15 +249,16 @@ int main()
 {
   BinaryTree bt;
 
-  bt.insertNode( new Node(10) );
-  bt.insertNode( new Node(6) );
-  bt.insertNode( new Node(5) );
-  bt.insertNode( new Node(8) );
-  bt.insertNode( new Node(14) );
-  bt.insertNode( new Node(11) );
-  bt.insertNode( new Node(18) );
+  bt.insertNode( new Node(2) );
   bt.insertNode( new Node(7) );
-  bt.insertNode( new Node(9) );
+  bt.insertNode( new Node(1) );
+  bt.insertNode( new Node(2) );
+  //bt.insertNode( new Node(6) );
+  //bt.insertNode( new Node(5) );
+  //bt.insertNode( new Node(11) );
+  //bt.insertNode( new Node(7) );
+  //bt.insertNode( new Node(9) );
+  //bt.insertNode( new Node(4) );
   std::cout << "print preorder" << std::endl;
   bt.printTree( &BinaryTree::printPreorder);
   std::cout << "print inorder" << std::endl;
@@ -268,6 +270,11 @@ int main()
 
   std::vector<Node*> unbalanced_tree;
   bt.sortedVector(  bt.root, unbalanced_tree );
+
+  std::cout << "sorted unbalanced_tree" << std::endl;
+  for (const auto & node : unbalanced_tree) {
+    std::cout << node->value << std::endl;
+  }
   std::cout << "balancing the tree" << std::endl;
   bt.balanceTree();
   std::vector<Node*> balanced_tree;

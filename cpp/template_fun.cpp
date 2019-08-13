@@ -72,6 +72,12 @@ public:
   }
 };
 
+template<class T>
+class MyNode
+{
+  typedef T T;
+};
+
 int main()
 {
   Node n;
@@ -81,6 +87,9 @@ int main()
   LifecycleNode lcn;
   LifecyclePublisher<std::string> lcn_pub = lcn.create_publisher<std::string>();
   assert(lcn.get_number_of_publisher()==1);
+
+  MyNode<int> mn;
+  decltype<mn::T> mn2;
   return 0;
 
 }

@@ -117,6 +117,24 @@ void hitMe( long l )
   std::cout << "Just a normal function for long " << l << std::endl;
 }
 
+class TopLevelNode
+{
+  virtual void
+  do_stuff() = 0;
+};
+
+template<class T>
+class MyNode : public TopLevelNode
+{
+public:
+  using type = T;
+
+  // template<typename std::enable_if<!std::is_same<T, int>::value, T>::type * = nullptr>
+  void do_stuff() override
+  {
+  }
+};
+
 int main()
 {
   hitMe(213421);
@@ -138,5 +156,7 @@ int main()
   OuterClass<std::string>::InnerClass<double> inner;
   inner.doStuff();
 
+  MyNode<float> mn;
+  decltype(mn)::type mn2;
   return 0;
 }

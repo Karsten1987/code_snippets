@@ -1,57 +1,36 @@
 #include <iostream>
+#include <string>
 #include <vector>
 
-std::vector<std::vector<int>> getPermutations( const std::vector<int>& vec )
+std::vector<std::string> get_permuations(const std::string & s)
 {
-  std::vector<std::vector<int>> res;
-  if (vec.size() == 2)
-  {
-    std::vector<int> i1 = {vec[0], vec[1]};
-    std::vector<int> i2 = {vec[1], vec[0]};
-    res.push_back( i1 );
-    res.push_back( i2 );
-    return res;
+  std::vector<std::string> permuations;
+  if (s.size() == 2) {
+    permuations.push_back(std::string("") + s[0] + s[1]);
+    permuations.push_back(std::string("") + s[1] + s[0]);
+    return permuations;
   }
 
-  int i = vec.front();
-  std::vector<std::vector<int>> old_perm = getPermutations( std::vector<int>(vec.begin()+1, vec.end() ));
-  for (auto idx=0;idx<old_perm.size();++idx)
-  {
-    for (int input_idx=0;input_idx<old_perm[idx].size()+1;++input_idx)
-    {
-      std::vector<int> new_perm;
-      new_perm.reserve(old_perm[idx].size()+1);
-
-      for (auto k=0;k<input_idx;++k)
-      {
-        new_perm.push_back( old_perm[idx][k] );
-      }
-      new_perm.push_back(i);
-      for (auto k=input_idx;k<old_perm[idx].size();++k)
-      {
-        new_perm.push_back( old_perm[idx][k] );
-      }
-
-      res.push_back( new_perm );
+  auto sub_perm = get_permuations(s.substr(1));
+  for (const auto & p : sub_perm) {
+    for (size_t i = 0; i <= p.size(); ++i) {
+      std::string sub_p = p.substr(0, i) + s[0] + p.substr(i);
+      permuations.push_back(sub_p);
     }
   }
-  return res;
+
+  return permuations;
 }
 
 int main()
 {
-
-  std::vector<int> input = {1,2,3,4,5};
-  std::vector<std::vector<int>> perms = getPermutations(input);
-  for (auto i=0;i<perms.size();++i)
-  {
-    for (auto j=0;j<perms[i].size();++j)
-    {
-      std::cout << perms[i][j] << " ";
-    }
-    std::cout << std::endl;
-  }
-  std::cout << perms.size() << std::endl;
+  //std::string s = "hello_world";
+  std::string s = "abcd";
+  auto permuations = get_permuations(s);
+  std::cout << "size of permutaitons " << permuations.size() << std::endl;
+  //for (const auto & p : permuations) {
+  //  std::cout << p << std::endl;
+  //}
 
   return 0;
 }
