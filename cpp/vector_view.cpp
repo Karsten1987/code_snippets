@@ -1,19 +1,14 @@
 #include <iostream>
 #include <vector>
 
+#include "pod.hpp"
+
 template<class T>
 class VectorView
 {
-  class iterator
+  class iterator : public std::vector<T>::reverse_iterator
   {
   public:
-    typedef iterator self_type;
-    typedef T value_type;
-    typedef T& reference;
-    typedef T* pointer;
-    typedef std::forward_iterator_tag iterator_category;
-    typedef int difference_type;
-
     iterator(std::vector<T> & base, std::vector<size_t> & indices)
     :iterator(base, indices, 0)
     {}
@@ -23,33 +18,43 @@ class VectorView
       base_(base),
       indices_(indices),
       ptr_(&base[indices[current_index_]])
-    {}
-
-    self_type operator++()
     {
-      self_type i = *this;
-      ++i.current_index_;
-      i.ptr_ = &base_[indices_[i.current_index_]];
-      return i;
+      if (current_index_ >= indices_.size()) {
+        ptr_ = &base[base.size()];
+      }
     }
 
-    reference operator*() {
+    iterator operator++()
+    {
+      ++current_index_;
+      if (current_index_ >= indices_.size()) {
+        ptr_ = &base_[base_.size()];
+      } else {
+        ptr_ = &base_[indices_[current_index_]];
+      }
+      return *this;
+    }
+
+    T & operator*()
+    {
       return *ptr_;
     }
 
-    pointer operator->() {
+    T * operator->()
+    {
       return ptr_;
     }
 
-    bool operator==(const self_type& rhs) { return ptr_ == rhs.ptr_; }
-    bool operator!=(const self_type& rhs) { return ptr_ != rhs.ptr_; }
+    bool operator==(const iterator & rhs) { return ptr_ == rhs.ptr_; }
+    bool operator!=(const iterator & rhs) { return ptr_ != rhs.ptr_; }
 
   private:
     size_t current_index_;
     std::vector<T> & base_;
     std::vector<size_t> & indices_;
-    pointer ptr_;
+    T * ptr_;
   };
+
 public:
   VectorView(std::vector<T> & base, const std::vector<size_t> & indices)
     : base_(base), indices_(indices)
@@ -70,13 +75,22 @@ private:
   std::vector<size_t> indices_;
 };
 
-int main() {
-
-  std::vector<int> base = {1, 2, 3, 4, 5, 6, 7, 8, 9, 0};
-  VectorView<int> view(base, {0, 2, 4, 6, 8});
+int main()
+{
+  using type_t = POD<true>;
+  std::vector<type_t> base(10);
+  for (auto i = 0u; i < base.size(); ++i) {
+    base[i].data = i;
+  }
+  //std::vector<int> base = {1, 2, 3, 4, 5, 6, 7, 8, 9, 0};
+  VectorView<type_t> view(base, {9, 8, 7, 6, 5, 4, 3, 2, 1, 0});
 
   auto it = view.begin();
-  std::cout << *it << std::endl;
-  std::cout << *++it << std::endl;
+  ++it;
+  ++it;
+
+  for (const auto & i : view) {
+    std::cout << i.data << std::endl;
+  }
   return 0;
 }
