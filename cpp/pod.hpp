@@ -92,6 +92,18 @@ public:
   static uint64_t move_assignment_count;
 };
 
+template<
+  bool verbose,
+  class T = size_t
+>
+inline std::ostream & operator << (std::ostream & out, const POD<verbose, T> & pod)
+{
+  out << "POD(";
+  out << pod.data;
+  out << ")";
+  return out;
+}
+
 template<> uint64_t POD<true>::default_constructor_count = 0u;
 template<> uint64_t POD<true>::destructor_count = 0u;
 template<> uint64_t POD<true>::copy_constructor_count = 0u;
